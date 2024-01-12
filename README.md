@@ -1,4 +1,7 @@
-User Management System.
-Using Restful Api with sanctum authentication.
-Backend - Laravel
-Frontedn - React
+## User Management System
+Using 
+```
+// Backend - Laravel
+// Frontedn - React
+// Restful Api with sanctum authentication
+```
