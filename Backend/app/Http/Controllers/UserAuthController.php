@@ -1,0 +1,121 @@
+<?php
+
+namespace App\Http\Controllers;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+
+class UserAuthController extends Controller
+{
+    //
+    public function __construct()
+    {
+        //$this->middleware('verified')->only('profile');
+        //$this->middleware('auth');
+        $this->middleware('signed')->only('verify');
+        $this->middleware('throttle:3,1')->only('verify','resend');
+        
+    }
+    //Register new user
+    public function register(Request $request){
+        $registerUserData = $request->validate([
+            'name'=>'required|string',
+            'email'=>'required|string|email|unique:users',
+            'password'=>'required|min:8'
+        ]);
+        $user = User::create([
+            'name' => $registerUserData['name'],
+            'email' => $registerUserData['email'],
+            'password' => Hash::make($registerUserData['password']),
+        ]);
+
+        event(new Registered($user));
+
+        $cr = $request->only('email','password');
+        Auth::attempt($cr);
+        
+        return response()->json([
+            'message' => 'User verify ur email. Verification link sent',
+        ]);
+        return redirect()->route('verification.notice');
+    }
+
+    //Login
+    public function login(Request $request){
+        $loginUserData = $request->validate([
+            'email'=>'required|string|email',
+            'password'=>'required|min:8'
+        ]);
+        $user = User::where('email',$loginUserData['email'])->first();
+        if(!$user || !Hash::check($loginUserData['password'],$user->password)){
+            return response()->json([
+                'message' => 'Invalid Credentials'
+            ],401);
+        }
+        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+        return response()->json([
+            'status' => "Logged In",
+            'access_token' => $token,
+        ]);
+    }
+
+    //search information
+    public function show($id)
+    {
+        $data = User::find($id);
+        return response()->json([
+            'status' => '200',
+            'data' => $data
+        ]);
+    }
+
+    //updated information
+    public function update(Request $request, $id)
+    {
+        //validate
+        $request->validate([
+            'name' => 'unique:users,name|min:4',
+            'email' => 'email|unique:users,email',
+            'password' => 'min:8|confirmed'
+        ]);
+        //update
+        $user = auth()->user();
+        User::where('id','=',$user->id)->update([
+            isset($request->name) ? : $request->name ,
+            isset($request->email) ? : $request->email,
+            Hash::check($request->password,$user->password) ? : Hash::make($request->password)
+        ]);
+
+        //response
+        return response()->json([
+            'status' => '200',
+            'message' => 'User information updated succesfully',
+        ]);
+    }
+
+    //profile
+    public function profile()
+    {
+        //return profile
+        return response()->json([
+            'status' => '200',
+            'message' => 'profile',
+            'data' => auth()->user(),
+        ]);
+    }
+
+
+    //logout
+    public function logout(){
+        auth()->user()->tokens()->delete();
+    
+        return response()->json([
+          "message"=>"logged out"
+        ]);
+    }
+
+    
+}
