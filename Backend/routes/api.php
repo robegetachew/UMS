@@ -31,6 +31,10 @@ Route::controller(UserAuthController::class)->group(function () {
     Route::post ('login','login')->name('login');
     Route::post('logout','logout')
       ->middleware('auth:sanctum')->name('logout');
+    Route::get('forget-password', 'passwordForm')->name('password.request');
+    Route::post('forget-password', 'submitForm')->name('password.email'); 
+    Route::get('reset-password/{token}', 'resetForm')->name('password.reset');
+    Route::post('reset-password',  'submitReset')->name('password.update');
     
 });
 
