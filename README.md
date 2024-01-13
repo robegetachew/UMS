@@ -2,6 +2,6 @@
 Using 
 ```
 // Backend - Laravel
-// Frontedn - React
+// Frontend - React
 // Restful Api with sanctum authentication
 ```
