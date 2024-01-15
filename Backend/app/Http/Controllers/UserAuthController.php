@@ -9,21 +9,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
-
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Str;
 use Carbon\Carbon; 
 use Illuminate\Http\RedirectResponse;
 use Mail;
 use DB;
+
 class UserAuthController extends Controller
 {
     //
     public function __construct()
     {
-        //$this->middleware('verified')->only('profile');
-        //$this->middleware('auth');
-        $this->middleware('signed')->only('verify');
         $this->middleware('throttle:3,1')->only('verify','resend');
+        
         
     }
     //Register new user
@@ -56,6 +56,7 @@ class UserAuthController extends Controller
             'email'=>'required|string|email',
             'password'=>'required|min:8'
         ]);
+        
         $user = User::where('email',$loginUserData['email'])->first();
         if(!$user || !Hash::check($loginUserData['password'],$user->password)){
             return response()->json([
@@ -63,9 +64,16 @@ class UserAuthController extends Controller
             ],401);
         }
         $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+        if($user->hasRole('admin')){
+                $role = 'Admin';
+            }
+            else {
+                $role = 'User';
+            }
         return response()->json([
             'status' => "Logged In",
             'access_token' => $token,
+            'role' => $role,
         ]);
     }
 
@@ -107,13 +115,30 @@ class UserAuthController extends Controller
     public function profile()
     {
         //return profile
+        $user = Auth::user();
+        if( $user->hasRole('admin'))
+        {
+            $role = "ADMIN";
+        }
+        else{
+            $role = "User";
+        }
         return response()->json([
             'status' => '200',
             'message' => 'profile',
             'data' => auth()->user(),
+            'role' => $role,
         ]);
     }
 
+    //delete profile
+    public function destroy($id)
+    {
+        User::where('id',$id)->delete();
+        return response()->json([
+            "message"=>"User Deleted"
+          ]);
+    }
 
     //logout
     public function logout(){
