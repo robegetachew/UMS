@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Activitylog\Models\Activity;
+
 use Illuminate\Support\Str;
 use Carbon\Carbon; 
 use Illuminate\Http\RedirectResponse;
@@ -28,6 +30,8 @@ class UserAuthController extends Controller
     }
     //Register new user
     public function register(Request $request){
+        activity()->log('Registered');
+
         $registerUserData = $request->validate([
             'name'=>'required|string',
             'email'=>'required|string|email|unique:users',
@@ -47,11 +51,15 @@ class UserAuthController extends Controller
         return response()->json([
             'message' => 'User verify ur email. Verification link sent',
         ]);
+
         return redirect()->route('verification.notice');
+
     }
 
     //Login
     public function login(Request $request){
+        activity()->log('Logged In');
+
         $loginUserData = $request->validate([
             'email'=>'required|string|email',
             'password'=>'required|min:8'
@@ -64,6 +72,8 @@ class UserAuthController extends Controller
             ],401);
         }
         $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
+
+
         if($user->hasRole('admin')){
                 $role = 'Admin';
             }
@@ -90,6 +100,8 @@ class UserAuthController extends Controller
     //updated information
     public function update(Request $request, $id)
     {
+        activity()->log('Updated profile');
+
         //validate
         $request->validate([
             'name' => 'unique:users,name|min:4',
@@ -97,11 +109,11 @@ class UserAuthController extends Controller
             'password' => 'min:8|confirmed'
         ]);
         //update
-        $user = auth()->user();
+        $user = Auth::user();
         User::where('id','=',$user->id)->update([
-            isset($request->name) ? : $request->name ,
-            isset($request->email) ? : $request->email,
-            Hash::check($request->password,$user->password) ? : Hash::make($request->password)
+            'name' => isset($request->name) ? :  $request->name ,
+            'email' => isset($request->email) ? :  $request->email,
+            'password' => Hash::check($request->password,$user->password) ? :  Hash::make($request->password)
         ]);
 
         //response
@@ -109,11 +121,14 @@ class UserAuthController extends Controller
             'status' => '200',
             'message' => 'User information updated succesfully',
         ]);
+
     }
 
     //profile
     public function profile()
     {
+        activity()->log('Profile viewed');
+
         //return profile
         $user = Auth::user();
         if( $user->hasRole('admin'))
@@ -123,12 +138,14 @@ class UserAuthController extends Controller
         else{
             $role = "User";
         }
+
         return response()->json([
             'status' => '200',
             'message' => 'profile',
             'data' => auth()->user(),
             'role' => $role,
         ]);
+
     }
 
     //delete profile
@@ -142,6 +159,8 @@ class UserAuthController extends Controller
 
     //logout
     public function logout(){
+        activity()->log('Logged Out');
+
         auth()->user()->tokens()->delete();
     
         return response()->json([
@@ -170,7 +189,6 @@ class UserAuthController extends Controller
             return $status === Password::RESET_LINK_SENT
                 ? response()->json(['status' => __($status)])
                 : response()->json(['email' => __($status)]);
-
           
       }
      
@@ -183,6 +201,8 @@ class UserAuthController extends Controller
      // submit reset form
       public function submitReset(Request $request)
       {
+        activity()->log('Reseted password');
+
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
@@ -205,7 +225,21 @@ class UserAuthController extends Controller
         return $status === Password::PASSWORD_RESET
                     ? redirect()->route('login')->with('status', __($status))
                     : response()->json(['email' => [__($status)]]);
-          
-      }
     
+    }
+
+    //activity tracker
+    public function activity()
+    {
+        $user_id = Auth::user()->id;
+        return response()->json([
+            'last activit' => Activity::where('causer_id','=',$user_id)->get(),
+        ]);
+    }
+
+    //activity tracker for admin
+    public function all_activity()
+    {
+
+    }
 }
