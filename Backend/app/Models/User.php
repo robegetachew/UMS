@@ -66,7 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail
     
     public function getActivitylogOptions(): LogOptions
     {
-        return LogOptions::default()->dontSubmitEmptyLogs();
+        return LogOptions::default();
     }
     
 }

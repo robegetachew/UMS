@@ -232,14 +232,28 @@ class UserAuthController extends Controller
     public function activity()
     {
         $user_id = Auth::user()->id;
+        $activity = Activity::where('causer_id','=',$user_id)->get()[0];
         return response()->json([
-            'last activit' => Activity::where('causer_id','=',$user_id)->get(),
+            'last activity' => $activity->description,
+            'date' => $activity->created_at,
+            User::all()->except(Auth::id())
         ]);
     }
 
     //activity tracker for admin
     public function all_activity()
     {
-
+        $users = User::all()->except(auth()->user()->id);
+        foreach($users as $user){
+            $activity = Activity::where('causer_id','=',$user->id)->get();
+            return response()->json([
+                'name' => $user->name,
+                'email' => $user->email,
+                'status' => 'on progress',
+                'role' => $user->hasRole('admin')? 'admin': 'user',
+                'date' => Carbon::parse($activity->get('created_at'))->diffForHumans(),
+                'activity' => $activity->get('description') ,
+            ]);
+        }
     }
 }
