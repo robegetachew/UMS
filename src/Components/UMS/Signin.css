@@ -1,0 +1,148 @@
+/*Signin.css*/
+
+body {
+  top: -511px;
+  left: -2318p;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    background: #E0EFFE;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .signin-container {
+    width: 550px;
+    height: 550px;
+    margin-top: 100px;
+    margin-bottom: 65px;
+    border-radius: 60px;
+    background: #FFFFFF;
+    box-shadow: 20px 20px 50px 5px #00000040, -20px -20px 50px 5px #FFFFFF40;
+  }
+  
+  .signin-input {
+    display: flex;
+    width: 406px;
+    height: 55px;
+    border: 3px solid #007DFA;
+    border-radius: 10px;
+    margin-left: 20px;
+  }
+  
+  .signin-txts {
+    margin-left: 75px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+    margin-bottom: 10px;
+    margin-top: 20px;
+  }
+  
+  .signin-text {
+    font-weight: 700;
+    line-height: 29.05px;
+    font-size: 24px;
+  
+    margin-bottom: 10px;
+    margin-left: 230px;
+    padding-top: 40px;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .signin-inputs {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .signin-input {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    margin-left: 70px;
+    
+  }
+  
+  .signin-input img {
+    margin: 0px 10px;
+  }
+  
+  .signin-input input {
+    outline: none;
+    border: none;
+    width: 340px;
+    height: 40px;
+  }
+  
+  .signin-input:last-child {
+    margin-bottom: 0;
+  }
+  
+  .signin-submit {
+    width: 249px;
+    background-color: #007DFA;
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 70px;
+    border-radius: 10px;
+    border: 3px solid #6894D7;
+    background: linear-gradient(0deg, #007DFA, #007DFA),
+      linear-gradient(0deg, #6894D7, #6894D7);
+  padding-left: 160px;
+  margin-top: 40px;
+  padding-top: 13px;
+  padding-bottom: 10px;
+  line-height: 29.05px;
+    letter-spacing: 0em;
+    font-family: 'Inter', sans-serif;
+    
+  }
+  
+  .signin-forget {
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20.2px;
+    width: 200px;
+    height: 19px;
+    top: 450px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0em;
+    text-align: left;
+    padding-left: 190px;
+  }
+  .signin-new-user{
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 20.2px;
+    color: black;
+    width: 200px;
+    height: 19px;
+    top: 450px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0em;
+    text-align: left;
+    padding-left: 190px;
+  }
+  
+  span {
+    color: #007DFA;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  

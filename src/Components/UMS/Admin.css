@@ -1,0 +1,180 @@
+/* Admin.css */
+body {
+  background: #e0effe;
+  height: 100vh; 
+}
+
+.admin-container {
+  flex-direction: column;
+}
+
+.header {
+  color: white;
+  height: 87px;
+  background: #4f8da8;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  padding-left: 81px;
+}
+
+.cube-icon {
+  width: 28px;
+  height: 28px;
+  margin-right: 8px;
+  top: 31px;
+  left: 80px;
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+nav {
+  margin-top: 16px;
+}
+
+.container {
+  width: 291px;
+  height: 1024px;
+  background: #2f7897;
+}
+
+.text {
+  width: 288px;
+  height: 40px;
+  padding-top: 20px;
+  padding-left: 80px;
+  font-family: 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+ul {
+  list-style: none;
+  padding-left: 150;
+  align-items: center;
+}
+
+li {
+  width: 219px;
+  cursor: pointer;
+  padding-left: 35px;
+  margin-left: -30px;
+  display: flex;
+  border-radius: 10px;
+  margin-top: 15px;
+  color: white;
+  transition: background-color 0.3s; /* Smooth transition for background color */
+}
+
+.li-container {
+  display: flex;
+  align-items: center;
+  margin-left: 0px;
+}
+.li-container:hover {
+  background-color: #e0effe; /* Add a hover effect to the entire box */
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+li img {
+  margin-right: 10px; 
+  transition: filter 0.3s; /* Smooth transition for filter effect */
+}
+.txt {
+  color: white;
+  transition: filter 0.3s; /* Smooth transition for filter effect */
+  font-family: 'Inter', sans-serif;
+
+}
+
+.li-container:hover img,
+.li-container:hover .txt {
+  filter: invert(100%); 
+}
+
+.active {
+  font-weight: bold;
+  background-color: #e0effe; /* Add a hover effect to the entire box */
+  margin-right: 5px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+
+.active img,
+.active .txt {
+  filter: invert(100%); /* Invert the color of the icon and text in the active state */
+}
+
+li.active {
+  background-color: #e0effe; /* Highlight color for the active section */
+  margin-right: 0px;
+}
+section {
+  margin-top: 16px;
+  section {
+    width: 100%;
+    max-width: 800px; /* Adjust the max-width based on your layout */
+    margin: 0 auto;
+  }
+}
+
+.user-activity-container{
+  width: 1000px;
+  height: 400px;
+  top: 273px;
+  margin-left: 347px;
+  padding-left: 100px;
+ 
+  
+}
+li.active {
+  background-color: #e0effe; /* Highlight color for the active section */
+  margin-right: 0px;
+}
+.user-table th,
+.user-table td {
+  border: 1px solid #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #4f8da8;
+  color: white;
+}
+
+.user-activity-container {
+  margin-left: 200px;
+  margin-top: -100px;
+}
+li.active {
+  background-color: #e0effe; /* Highlight color for the active section */
+  margin-right: 0px;
+}
+
+/* Style for the user table */
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.user-table th,
+.user-table td {
+  border: 1px solid #fff;
+  padding: 10px;
+  text-align: left;
+}
+
+.user-table th {
+  background-color: #4f8da8;
+  color: white;
+}
+
