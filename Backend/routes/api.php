@@ -24,7 +24,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['middleware'=>['auth:sanctum']],function () {
     Route::get('/profile',[UserAuthController::class,'profile'])->name('profile');
     Route::get('/user/{id}',[UserAuthController::class,'show'])->middleware('role:admin');
-    Route::put('/user/{id}',[UserAuthController::class,'update']);
+    Route::put('/update/{id}',[UserAuthController::class,'update'])->name('update');
     Route::delete('/user/{id}',[UserAuthController::class,'destroy'])->middleware('role:admin');
     Route::get('/activity',[UserAuthController::class,'activity'])->name('activity');
     Route::get('/all-activity',[UserAuthController::class,'all_activity'])->name('all_activity')->middleware('role:admin');
@@ -45,7 +45,7 @@ Route::controller(UserAuthController::class)->group(function () {
 
 
 Route::controller(VerificationController::class)->group(function() {
-    Route::post('/email/verify', 'notice')->name('verification.notice');
-    Route::get('/email/verify/{id}/{hash}', 'verify')->middleware(['auth','signed'])->name('verification.verify');
-    Route::post('/email/resend', 'resend')->name('verification.resend');   
+    Route::post('/email/verify', 'notice')->middleware('auth')->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', 'verify')->middleware(['auth', 'signed'])->name('verification.verify');
+    Route::post('/email/resend', 'resend')->middleware('auth')->name('verification.resend');   
 });

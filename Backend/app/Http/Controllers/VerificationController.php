@@ -1,17 +1,16 @@
 <?php
 
 namespace App\Http\Controllers\UserAuthController;
-
 namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class VerificationController extends Controller
 {
     //
     public function __construct()
     {
-        $this->middleware('auth');
         $this->middleware('signed')->only('verify');
         $this->middleware('throttle:3,1')->only('verify','resend');
     }
@@ -30,7 +29,7 @@ class VerificationController extends Controller
     public function verify(EmailVerificationRequest $request)
     {
         $request->fulfill();
-        return redirect()->route('profile')->response()
+        return response()
             ->json([
                 'message' => 'verified',
             ]);

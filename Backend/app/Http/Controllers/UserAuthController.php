@@ -26,7 +26,6 @@ class UserAuthController extends Controller
     {
         $this->middleware('throttle:3,1')->only('verify','resend');
         
-        
     }
     //Register new user
     public function register(Request $request){
@@ -37,6 +36,7 @@ class UserAuthController extends Controller
             'email'=>'required|string|email|unique:users',
             'password'=>'required|min:8'
         ]);
+        
         $user = User::create([
             'name' => $registerUserData['name'],
             'email' => $registerUserData['email'],
@@ -44,16 +44,13 @@ class UserAuthController extends Controller
         ]);
 
         event(new Registered($user));
-
         $cr = $request->only('email','password');
         Auth::attempt($cr);
         
         return response()->json([
             'message' => 'User verify ur email. Verification link sent',
-        ]);
-
-        return redirect()->route('verification.notice');
-
+        ])->route('verification.verify');
+        
     }
 
     //Login
@@ -84,7 +81,9 @@ class UserAuthController extends Controller
             'status' => "Logged In",
             'access_token' => $token,
             'role' => $role,
+            
         ]);
+        
     }
 
     //search information
@@ -103,18 +102,18 @@ class UserAuthController extends Controller
         activity()->log('Updated profile');
 
         //validate
-        $request->validate([
+        $data = $request->validate([
             'name' => 'unique:users,name|min:4',
             'email' => 'email|unique:users,email',
             'password' => 'min:8|confirmed'
         ]);
         //update
-        $user = Auth::user();
-        User::where('id','=',$user->id)->update([
-            'name' => isset($request->name) ? :  $request->name ,
-            'email' => isset($request->email) ? :  $request->email,
-            'password' => Hash::check($request->password,$user->password) ? :  Hash::make($request->password)
-        ]);
+        $user_data = User::find(auth()->user()->id);
+        isset($request->name)? $user_data->name = $data['name']: $user_data->name ;
+        isset($request->email)? $user_data->email = $data['email']: $user_data->email ;
+        isset($request->password)? $user_data->password = $data['password']: $user_data->password ;
+        $user_data->save();
+       
 
         //response
         return response()->json([
@@ -176,7 +175,7 @@ class UserAuthController extends Controller
          ]);
       }
   
-    //submit the form
+    //submit the form forget password
       public function submitForm(Request $request)
       {
           $request->validate([
@@ -206,11 +205,11 @@ class UserAuthController extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required|email',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:8',
         ]);
      
         $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
+            $request->only('email', 'password', 'token'),
             function (User $user, string $password) {
                 $user->forceFill([
                     'password' => Hash::make($password)
@@ -223,7 +222,7 @@ class UserAuthController extends Controller
         );
      
         return $status === Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
+                    ? response()->json('status: successfuly reseted')
                     : response()->json(['email' => [__($status)]]);
     
     }
@@ -235,24 +234,23 @@ class UserAuthController extends Controller
         $activity = Activity::where('causer_id','=',$user_id)->get()[0];
         return response()->json([
             'last activity' => $activity->description,
-            'date' => $activity->created_at,
-            User::all()->except(Auth::id())
+            'date' => Carbon::parse($activity->created_at)->diffForHumans(),
+
         ]);
     }
 
     //activity tracker for admin
     public function all_activity()
     {
-        $users = User::all()->except(auth()->user()->id);
-        foreach($users as $user){
-            $activity = Activity::where('causer_id','=',$user->id)->get();
+        foreach(User::where('id','>',1)->get() as $user){
+            //$activity = Activity::where('causer_id','=',$user->id)->get();
             return response()->json([
                 'name' => $user->name,
                 'email' => $user->email,
                 'status' => 'on progress',
                 'role' => $user->hasRole('admin')? 'admin': 'user',
-                'date' => Carbon::parse($activity->get('created_at'))->diffForHumans(),
-                'activity' => $activity->get('description') ,
+                //'date' => Carbon::parse($activity->get('created_at'))->diffForHumans(),
+                //'activity' => $activity->get('description') ,
             ]);
         }
     }

@@ -15,7 +15,7 @@ use Spatie\Activitylog\Models\Activity;
 */
 
 Route::get('/', function () {
-    $activity = Activity::all()->last();
-    return Auth::user()->actions();
+    return Activity::all()->last();
+    
     
 });
