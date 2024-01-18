@@ -5,6 +5,7 @@ import ActivityIcon from '../Assets/activity.png';
 import PasswordIcon from '../Assets/pwd.png';
 import './Admin.css';
 
+
 // sample
 const initialUsers = [
   { id: 1, name: 'Unkwon', email: 'unknown@example.com', status: 'Active', role: 'Admin', activity: 'High' },

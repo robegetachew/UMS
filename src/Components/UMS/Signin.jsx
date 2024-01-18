@@ -1,8 +1,8 @@
-// Signin.jsx
 import React, { useState } from 'react';
 import './Signin.css';
 import emailIcon from '../Assets/email.png';
 import passwordIcon from '../Assets/password.png';
+import axios from 'axios';
 
 const Signin = ({ onToggle, onForgetPassword, onSignup }) => {
   const [isWrongPassword, setIsWrongPassword] = useState(false);
@@ -22,21 +22,13 @@ const Signin = ({ onToggle, onForgetPassword, onSignup }) => {
       password: password,
     };
 
-    fetch(apiUrl, {
-      method: 'POST',
+    axios.post(apiUrl, loginData, {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(loginData),
     })
       .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log('Login successful:', data);
+        console.log('Login successful:', response.data);
         window.location.href = '../Component/UMS/Admin.jsx';
       })
       .catch(error => {

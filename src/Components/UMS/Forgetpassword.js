@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import './Signin.css'; 
+import './Signin.css';
 import emailIcon from '../Assets/email.png';
-import Resetpassword from './Resetpassword'; 
+import Resetpassword from './Resetpassword';
 
 const Forgetpassword = ({ onBackToLogin, onVerifySuccess }) => {
   const [isVerification, setIsVerification] = useState(false);
@@ -9,12 +9,11 @@ const Forgetpassword = ({ onBackToLogin, onVerifySuccess }) => {
 
   const handleContinue = () => {
     // logic to send the verification code to the email
-    //assume the code is sent successfully
+    // assume the code is sent successfully
     setIsVerification(true);
   };
 
   const handleVerify = () => {
-   
     onVerifySuccess();
   };
 
@@ -69,16 +68,17 @@ const Forgetpassword = ({ onBackToLogin, onVerifySuccess }) => {
               Verify
             </div>
           </div>
+          {/* Conditionally render Resetpassword component */}
+          {isVerification && <Resetpassword />}
           <div className="back-to-login" onClick={handleBack}>
             <div className="signin-new-user">
               <span>Back to Login</span>
             </div>
           </div>
-          <Resetpassword /> {}
         </div>
       )}
     </div>
   );
-}
+};
 
 export default Forgetpassword;
