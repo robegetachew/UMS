@@ -32,17 +32,16 @@ Route::group(['middleware'=>['auth:sanctum']],function () {
 });
 
 Route::controller(UserAuthController::class)->group(function () {
-    Route::post('register','register')->name('register');
-    Route::post ('login','login')->name('login');
-    Route::post('logout','logout')
+    Route::post('/register','register')->name('register');
+    Route::post ('/login','login')->name('login');
+    Route::post('/logout','logout')
       ->middleware('auth:sanctum')->name('logout');
-    Route::get('forget-password', 'passwordForm')->name('password.request');
-    Route::post('forget-password', 'submitForm')->name('password.email'); 
-    Route::get('reset-password/{token}', 'resetForm')->name('password.reset');
-    Route::post('reset-password',  'submitReset')->name('password.update');
+    Route::get('/forget-password', 'passwordForm')->name('password.request');
+    Route::post('/forget-password', 'submitForm')->name('password.email'); 
+    Route::get('/reset-password/{token}', 'resetForm')->name('password.reset');
+    Route::post('/reset-password',  'submitReset')->name('password.update');
     
 });
-
 
 Route::controller(VerificationController::class)->group(function() {
     Route::post('/email/verify', 'notice')->middleware('auth')->name('verification.notice');

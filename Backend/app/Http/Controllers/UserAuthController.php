@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+    
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +13,7 @@ use Illuminate\Auth\Events\PasswordReset;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Activitylog\Models\Activity;
-
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Str;
 use Carbon\Carbon; 
 use Illuminate\Http\RedirectResponse;
