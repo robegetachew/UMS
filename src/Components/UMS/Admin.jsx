@@ -1,4 +1,3 @@
-// Admin.jsx
 import React, { useState } from 'react';
 import CubeIcon from '../Assets/cube.png';
 import UserProfileIcon from '../Assets/userprofile.png';
@@ -6,11 +5,10 @@ import ActivityIcon from '../Assets/activity.png';
 import PasswordIcon from '../Assets/pwd.png';
 import './Admin.css';
 
-// Sample data for users
+// sample
 const initialUsers = [
   { id: 1, name: 'Unkwon', email: 'unknown@example.com', status: 'Active', role: 'Admin', activity: 'High' },
   { id: 2, name: 'uk1', email: 'uk1@example.com', status: 'Inactive', role: 'User', activity: 'Medium' },
-  // Add more user data as needed
 ];
 
 const UserTable = ({ users, handleEdit, handleDelete }) => {
@@ -57,7 +55,6 @@ const Admin = () => {
   };
 
   const handleEdit = (user) => {
-    // Set the selected user for editing
     setSelectedUser(user);
   };
 
@@ -139,5 +136,3 @@ const Admin = () => {
     </div>
   );
 };
-
-export default Admin;

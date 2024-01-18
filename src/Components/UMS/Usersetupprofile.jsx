@@ -1,5 +1,3 @@
-// Usersetupprofile.js
-
 import React, { useState, useEffect } from 'react';
 import './Usersetupprofile.css';
 import person_ic from '../Assets/person.png';

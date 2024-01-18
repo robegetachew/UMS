@@ -1,11 +1,31 @@
-// Registration.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import './Registration.css';
 import personIcon from '../Assets/person.png';
 import emailIcon from '../Assets/email.png';
 import passwordIcon from '../Assets/password.png';
 
 const Registration = ({ onToggle, onCreateAccount }) => {
+  const [password, setPassword] = useState('');
+  const [passwordStrength, setPasswordStrength] = useState('');
+
+  const handlePasswordChange = (event) => {
+    const newPassword = event.target.value;
+    setPassword(newPassword);
+    const strength = calculatePasswordStrength(newPassword);
+    setPasswordStrength(strength);
+  };
+
+  const calculatePasswordStrength = (password) => {
+   
+    if (password.length < 6) {
+      return 'Weak';
+    } else if (password.length < 10) {
+      return 'Moderate';
+    } else {
+      return 'Strong';
+    }
+  };
+
   return (
     <div className='reg-container'>
       <div className="reg-header">
@@ -25,7 +45,16 @@ const Registration = ({ onToggle, onCreateAccount }) => {
         <div className="reg-txts">Password</div>
         <div className="reg-input">
           <img src={passwordIcon} alt="" />
-          <input type="password" />
+          <input
+            type="password"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+          {passwordStrength && (
+            <div className={`password-strength ${passwordStrength.toLowerCase()}`}>
+              {passwordStrength} Password
+            </div>
+          )}
         </div>
         <div className="reg-txts">Confirm Password</div>
         <div className="reg-input">

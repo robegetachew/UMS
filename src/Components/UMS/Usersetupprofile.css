@@ -16,7 +16,6 @@ left: -2318p;
   justify-content: center;
 }
 
-/* Add the following styles to your existing CSS */
 
 
 
@@ -152,7 +151,7 @@ left: -2318p;
 .select-date {
   position: absolute;
   top: 50%;
-  right:5px; /* Adjust the right offset as needed */
+  right:5px; 
   transform: translateY(-50%);
   cursor: pointer;
 

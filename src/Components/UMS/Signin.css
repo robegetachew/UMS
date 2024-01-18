@@ -123,6 +123,9 @@ body {
     text-align: left;
     padding-left: 190px;
   }
+  .signin-submit span {
+    display: block;
+  }
   .signin-new-user{
     text-align: center;
     margin-top: 20px;
@@ -139,10 +142,74 @@ body {
     text-align: left;
     padding-left: 190px;
   }
+  .signinw-submit{
+    width: 279px;
+    background-color: #007DFA;
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 70px;
+    border-radius: 10px;
+    border: 3px solid #6894D7;
+    background: linear-gradient(0deg, #007DFA, #007DFA),
+      linear-gradient(0deg, #6894D7, #6894D7);
+  padding-left: 130px;
+  margin-top: 40px;
+  padding-top: 13px;
+  padding-bottom: 10px;
+  line-height: 29.05px;
+    letter-spacing: 0em;
+    font-family: 'Inter', sans-serif; 
+  }
   
   span {
     color: #007DFA;
     cursor: pointer;
     font-weight: bold;
+  }
+  .forget-submit{
+    width: 255px;
+    background-color: #007DFA;
+    color: #ffffff;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    font-size: 20px;
+    margin-left: 70px;
+    border-radius: 10px;
+    border: 3px solid #6894D7;
+    background: linear-gradient(0deg, #007DFA, #007DFA),
+      linear-gradient(0deg, #6894D7, #6894D7);
+  padding-left: 155px;
+  margin-top: 40px;
+  padding-top: 13px;
+  padding-bottom: 10px;
+  line-height: 29.05px;
+    letter-spacing: 0em;
+    font-family: 'Inter', sans-serif; 
+  }
+  .message{
+
+    color: #444444;
+    font-family: Open Sans;
+font-size: 20px;
+font-weight: 400;
+line-height: 24px;
+letter-spacing: 0.15000000596046448px;
+
+    width: 400px;
+height: 60px;
+margin-left: 85px;
+margin-top:120px;
+  
+  }
+  .forget-header{
+    height: 10px;
+    margin-left: -40px;
+    padding-top: 50px;
+    font-family: 'Inter', sans-serif;
+   
   }
   

@@ -1,55 +1,84 @@
-// Forgetpassword.js
 import React, { useState } from 'react';
+import './Signin.css'; 
+import emailIcon from '../Assets/email.png';
+import Resetpassword from './Resetpassword'; 
 
-const Forgetpassword = () => {
-  const [email, setEmail] = useState('');
-  const [isPasswordResetSent, setPasswordResetSent] = useState(false);
+const Forgetpassword = ({ onBackToLogin, onVerifySuccess }) => {
+  const [isVerification, setIsVerification] = useState(false);
+  const [verificationCode, setVerificationCode] = useState('');
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
+  const handleContinue = () => {
+    // logic to send the verification code to the email
+    //assume the code is sent successfully
+    setIsVerification(true);
   };
 
-  const handlePasswordReset = () => {
-    // Add your logic for sending a password reset email
-    // For demonstration purposes, just console log the email
-    console.log(`Password reset email sent to: ${email}`);
+  const handleVerify = () => {
+   
+    onVerifySuccess();
+  };
 
-    // Update state to indicate that password reset email is sent
-    setPasswordResetSent(true);
+  const handleBack = () => {
+    setIsVerification(false);
   };
 
   return (
-    <div>
-        <div className='signin-container'>
-      <h2>Forget Password</h2>
-      {isPasswordResetSent ? (
+    <div className='signin-container'>
+      <div className="forget-header">
+        <div className="signin-text">Forgot Password</div>
+      </div>
+      {!isVerification && (
         <div>
-          <p>Password reset instructions sent to your email.</p>
-          {/* You can add additional styling or links here */}
+          <div className='message'>
+            Enter your email for the verification process, we will send a code to your email.
+          </div>
+          <div className="signin-inputs">
+            <div className="signin-txts">Email</div>
+            <div className="signin-input">
+              <img src={emailIcon} alt="" />
+              <input type="email" />
+            </div>
+            <div className="forget-submit" onClick={handleContinue}>
+              Continue
+            </div>
+          </div>
+          <div className="back-to-login" onClick={onBackToLogin}>
+            <div className="signin-new-user">
+              <span>Back to Login</span>
+            </div>
+          </div>
         </div>
-      ) : (
+      )}
+
+      {isVerification && (
         <div>
-          <p>
-            Please enter your email address. We will send you instructions on
-            how to reset your password.
-          </p>
-          <form>
-            <label>Email:</label>
-            <input
-              type="email"
-              value={email}
-              onChange={handleEmailChange}
-              required
-            />
-            <button type="button" onClick={handlePasswordReset}>
-              Reset Password
-            </button>
-          </form>
+          <div className='message'>
+            Paste the code we sent to the email you entered to the box below.
+          </div>
+          <div className="signin-inputs">
+            <div className="signin-input">
+              <input
+                type="text"
+                placeholder="Paste here"
+                value={verificationCode}
+                onChange={(e) => setVerificationCode(e.target.value)}
+                style={{ marginLeft: '10px' }}
+              />
+            </div>
+            <div className="forget-submit" onClick={handleVerify}>
+              Verify
+            </div>
+          </div>
+          <div className="back-to-login" onClick={handleBack}>
+            <div className="signin-new-user">
+              <span>Back to Login</span>
+            </div>
+          </div>
+          <Resetpassword /> {}
         </div>
       )}
     </div>
-    </div>
   );
-};
+}
 
 export default Forgetpassword;
