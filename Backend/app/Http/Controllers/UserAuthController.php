@@ -39,6 +39,7 @@ class UserAuthController extends Controller
         ]);
         
         $user = User::create([
+            'id' => mt_rand(1000000000, 9999999999),
             'name' => $registerUserData['name'],
             'email' => $registerUserData['email'],
             'password' => Hash::make($registerUserData['password']),
@@ -235,7 +236,7 @@ class UserAuthController extends Controller
         $activity = Activity::where('causer_id','=',$user_id)->get()[0];
         return response()->json([
             'last activity' => $activity->description,
-            'date' => Carbon::parse($activity->created_at)->diffForHumans(),
+            'date' => $activity->update_at,
 
         ]);
     }

@@ -6,7 +6,7 @@ use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
 class Handler extends ExceptionHandler
 {
@@ -33,6 +33,20 @@ class Handler extends ExceptionHandler
                 ], 404);
             }
         });
+        $this->renderable(function (MethodNotAllowedHttpException $e, Request $request) {
+         
+                return response()->json([
+                    'message' => 'Method not allowed.'
+                ], 404);
+            
+        });
+        $this->renderable(function (BadMethodCallException $e, Request $request) {
+         
+            return response()->json([
+                'message' => 'method error.'
+            ], 404);
+        
+    });
     }
     
 }
