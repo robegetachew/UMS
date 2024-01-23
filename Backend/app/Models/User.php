@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, LogsActivity;
+    use  HasFactory, Notifiable, HasRoles, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -69,6 +70,16 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return LogOptions::defaults()
         ->logOnly(['name', 'email','password']);
+    }
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
     
 }

@@ -25,6 +25,7 @@ class UserAuthController extends Controller
     //
     public function __construct()
     {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
         $this->middleware('throttle:3,1')->only('verify','resend');
         
     }
@@ -70,8 +71,13 @@ class UserAuthController extends Controller
                 'message' => 'Invalid Credentials'
             ],401);
         }
-        $token = $user->createToken($user->name.'-AuthToken')->plainTextToken;
-
+        $credentials = $request->only('email', 'password');
+        $token = Auth::attempt($credentials);
+        if (!$token) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
 
         if($user->hasRole('admin')){
                 $role = 'Admin';
@@ -81,8 +87,11 @@ class UserAuthController extends Controller
             }
         return response()->json([
             'status' => "Logged In",
-            'access_token' => $token,
             'role' => $role,
+            'authorization' => [
+                'token' => $token,
+                'type' => 'bearer',
+            ]
             
         ]);
         
@@ -162,10 +171,21 @@ class UserAuthController extends Controller
     public function logout(){
         activity()->log('Logged Out');
 
-        auth()->user()->tokens()->delete();
-    
+        Auth::logout();
         return response()->json([
           "message"=>"logged out"
+        ]);
+    }
+
+    //referesh token
+    public function refresh()
+    {
+        return response()->json([
+            'user' => Auth::user(),
+            'authorisation' => [
+                'token' => Auth::refresh(),
+                'type' => 'bearer',
+            ]
         ]);
     }
 
