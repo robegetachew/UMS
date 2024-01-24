@@ -17,5 +17,4 @@ use Spatie\Activitylog\Models\Activity;
 Route::get('/', function () {
     return Activity::all()->last();
     
-    
 });

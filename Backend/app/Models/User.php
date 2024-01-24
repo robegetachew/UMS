@@ -9,12 +9,14 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements MustVerifyEmail, JWTSubject
 {
-    use  HasFactory, Notifiable, HasRoles, LogsActivity;
+    use  HasFactory, Notifiable, HasRoles, LogsActivity,SoftDeletes, HasApiTokens ;
 
     /**
      * The attributes that are mass assignable.
@@ -65,6 +67,10 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     }
     */
 
+    public function userinfo()
+    {
+        return $this->hasOne(UserInfo::class);
+    }
     
     public function getActivitylogOptions(): LogOptions
     {
@@ -76,7 +82,12 @@ class User extends Authenticatable implements MustVerifyEmail, JWTSubject
     {
         return $this->getKey();
     }
-
+ 
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
     public function getJWTCustomClaims()
     {
         return [];

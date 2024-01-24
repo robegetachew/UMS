@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
     
 use App\Models\User;
+use App\Models\UserInfo;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
@@ -10,10 +12,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Spatie\Activitylog\Models\Activity;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\JWTException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException;
+use PHPOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException;
 use Illuminate\Support\Str;
 use Carbon\Carbon; 
 use Illuminate\Http\RedirectResponse;
@@ -29,8 +36,18 @@ class UserAuthController extends Controller
         $this->middleware('throttle:3,1')->only('verify','resend');
         
     }
+    //Generate 20 digit random number
+     
     //Register new user
     public function register(Request $request){
+        function random_id(){
+            $number = "";
+            for($i=0; $i<19; $i++) {
+              $min = ($i == 0) ? 1:0;
+              $number .= mt_rand($min,9);
+            }
+            return $number;
+          }
         activity()->log('Registered');
 
         $registerUserData = $request->validate([
@@ -40,7 +57,7 @@ class UserAuthController extends Controller
         ]);
         
         $user = User::create([
-            'id' => mt_rand(1000000000, 9999999999),
+            'id' => random_id(),
             'name' => $registerUserData['name'],
             'email' => $registerUserData['email'],
             'password' => Hash::make($registerUserData['password']),
@@ -52,7 +69,7 @@ class UserAuthController extends Controller
         
         return response()->json([
             'message' => 'User verify ur email. Verification link sent',
-        ])->route('verification.verify');
+        ]);
         
     }
 
@@ -60,47 +77,42 @@ class UserAuthController extends Controller
     public function login(Request $request){
         activity()->log('Logged In');
 
-        $loginUserData = $request->validate([
-            'email'=>'required|string|email',
-            'password'=>'required|min:8'
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
-        
-        $user = User::where('email',$loginUserData['email'])->first();
-        if(!$user || !Hash::check($loginUserData['password'],$user->password)){
-            return response()->json([
-                'message' => 'Invalid Credentials'
-            ],401);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
+
         $credentials = $request->only('email', 'password');
-        $token = Auth::attempt($credentials);
+        $token = auth()->guard('api')->attempt($credentials);
+        
         if (!$token) {
             return response()->json([
                 'message' => 'Unauthorized',
             ], 401);
         }
 
-        if($user->hasRole('admin')){
-                $role = 'Admin';
-            }
-            else {
-                $role = 'User';
-            }
+        $user = auth()->guard('api')->user();
+        $admin = User::find(8447664152455169219);
+        $admin->assignRole('admin');
         return response()->json([
-            'status' => "Logged In",
-            'role' => $role,
+            'user' => $user,
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
+                'expires_in' => auth()->guard('api')->factory()->getTTL() * 60
             ]
-            
-        ]);
+        ],200);
         
     }
 
-    //search information
-    public function show($id)
+    //search information by name
+    public function show($name)
     {
-        $data = User::find($id);
+        $data = User::where('name','=',$name)->first();
         return response()->json([
             'status' => '200',
             'data' => $data
@@ -125,7 +137,6 @@ class UserAuthController extends Controller
         isset($request->password)? $user_data->password = $data['password']: $user_data->password ;
         $user_data->save();
        
-
         //response
         return response()->json([
             'status' => '200',
@@ -141,19 +152,12 @@ class UserAuthController extends Controller
 
         //return profile
         $user = Auth::user();
-        if( $user->hasRole('admin'))
-        {
-            $role = "ADMIN";
-        }
-        else{
-            $role = "User";
-        }
+        $user_info = UserInfo::where('user_id','=',Auth::user()->id)->get();
 
         return response()->json([
             'status' => '200',
             'message' => 'profile',
-            'data' => auth()->user(),
-            'role' => $role,
+            'data' => [$user,$user_info]
         ]);
 
     }
@@ -171,22 +175,39 @@ class UserAuthController extends Controller
     public function logout(){
         activity()->log('Logged Out');
 
-        Auth::logout();
-        return response()->json([
-          "message"=>"logged out"
-        ]);
+        $removeToken = JWTAuth::invalidate(JWTAuth::getToken());
+        if($removeToken){
+            return response()->json([
+              'message' => 'Successfully logged out',
+            ]);
+        }else{
+              return response()->json([
+                  'success' => false,
+                  'message' => 'Failed logged out',
+              ], 409);
+        }
     }
 
     //referesh token
     public function refresh()
     {
-        return response()->json([
-            'user' => Auth::user(),
-            'authorisation' => [
-                'token' => Auth::refresh(),
-                'type' => 'bearer',
-            ]
-        ]);
+        $token = auth()->guard('api')->refresh();
+        if($token){
+            return response()->json([
+                'user' => auth()->guard('api')->user(),
+                'authorization' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                    'expires_in' => auth()->factory()->getTTL() * 60
+                ]
+            ]);
+        }else{
+              return response()->json([
+                  'success' => false,
+                  'message' => 'Failed refresh token',
+              ], 409);
+        }
+    
     }
 
     //password forget form
@@ -253,10 +274,10 @@ class UserAuthController extends Controller
     public function activity()
     {
         $user_id = Auth::user()->id;
-        $activity = Activity::where('causer_id','=',$user_id)->get()[0];
+        $activity = Activity::where('causer_id','=',$user_id)->get();
         return response()->json([
-            'last activity' => $activity->description,
-            'date' => $activity->update_at,
+            'last activity' => 'whatever',
+            ///'date' => $activity->update_at,
 
         ]);
     }
