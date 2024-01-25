@@ -120,7 +120,7 @@ class UserAuthController extends Controller
     }
 
     //updated information
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         activity()->log('Updated profile');
 
