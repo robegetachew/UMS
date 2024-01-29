@@ -7,7 +7,7 @@ use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-
+use Spatie\Permission\Exceptions\UnauthorizedException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -44,6 +44,12 @@ class Handler extends ExceptionHandler
          
             return response()->json([
                 'message' => 'method error.'
+            ], 404);
+        });
+        $this->renderable(function (UnauthorizedException $e, Request $request) {
+        
+            return response()->json([
+                'message' => 'Unauthorized'
             ], 404);
         
     });

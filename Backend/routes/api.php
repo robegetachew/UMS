@@ -22,10 +22,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 
-Route::group(['middleware'=>['auth:api']],function () {
+
+Route::group(['middleware'=>['auth:api', 'verified']],function () {
     Route::get('/profile',[UserAuthController::class,'profile'])->name('profile');
     Route::get('/user/{name}',[UserAuthController::class,'show'])->middleware('role:admin');
     Route::put('/update',[UserAuthController::class,'update'])->name('update');
+    Route::put('/update/{id}',[UserAuthController::class,'update_user'])->name('update_user')->middleware('role:admin');
     Route::delete('/user/{id}',[UserAuthController::class,'destroy'])->middleware('role:admin');
     Route::get('/activity',[UserAuthController::class,'activity'])->name('activity');
     Route::get('/info',[UserInfoController::class,'info'])->name('info');

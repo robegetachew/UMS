@@ -35,9 +35,7 @@ class UserAuthController extends Controller
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
         $this->middleware('throttle:3,1')->only('verify','resend');
         
-    }
-    //Generate 20 digit random number
-     
+    }     
     //Register new user
     public function register(Request $request){
         function random_id(){
@@ -86,6 +84,7 @@ class UserAuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
+        
         $credentials = $request->only('email', 'password');
         $token = auth()->guard('api')->attempt($credentials);
         
@@ -96,6 +95,12 @@ class UserAuthController extends Controller
         }
 
         $user = auth()->guard('api')->user();
+        if (!$user->hasVerifiedEmail())
+        {
+            return response()->json([
+                'message' => 'Email not verified',
+            ], 403);
+        }
         $admin = User::find(8447664152455169219);
         $admin->assignRole('admin');
         return response()->json([
@@ -144,6 +149,31 @@ class UserAuthController extends Controller
         ]);
 
     }
+    public function update_user(Request $request,$id)
+    {
+        activity()->log('Updated profile');
+
+        //validate
+        $data = $request->validate([
+            'name' => 'unique:users,name|min:4',
+            'email' => 'email|unique:users,email',
+            'password' => 'min:8|confirmed'
+        ]);
+        //update
+        $user_data = User::find($id);
+        isset($request->name)? $user_data->name = $data['name']: $user_data->name ;
+        isset($request->email)? $user_data->email = $data['email']: $user_data->email ;
+        isset($request->password)? $user_data->password = $data['password']: $user_data->password ;
+        $user_data->save();
+       
+        //response
+        return response()->json([
+            'status' => '200',
+            'message' => 'User information updated succesfully',
+            'data' => $user_data,
+        ]);
+
+    }
 
     //profile
     public function profile()
@@ -155,9 +185,7 @@ class UserAuthController extends Controller
         $user_info = UserInfo::where('user_id','=',Auth::user()->id)->get();
 
         return response()->json([
-            'status' => '200',
-            'message' => 'profile',
-            'data' => [$user,$user_info]
+            'data' => $user,
         ]);
 
     }
