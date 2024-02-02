@@ -21,9 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 
-
-
-Route::group(['middleware'=>['auth:api', 'verified']],function () {
+Route::group(['middleware'=>['auth:api', ]],function () {
     Route::get('/profile',[UserAuthController::class,'profile'])->name('profile');
     Route::get('/user/{name}',[UserAuthController::class,'show'])->middleware('role:admin');
     Route::put('/update',[UserAuthController::class,'update'])->name('update');
@@ -48,6 +46,12 @@ Route::controller(UserAuthController::class)->group(function () {
     Route::get('/reset-password/{token}', 'resetForm')->name('password.reset');
     Route::post('/reset-password',  'submitReset')->name('password.update');
     
+});
+
+Route::controller(UserInfoController::class)->group(function (){
+    Route::get('/info','info')->name('info');
+    Route::post('/info','store')->name('store');
+
 });
 
 Route::controller(VerificationController::class)->group(function() {

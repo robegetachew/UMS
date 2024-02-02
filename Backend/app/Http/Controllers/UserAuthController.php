@@ -32,9 +32,8 @@ class UserAuthController extends Controller
     //
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register','passwordForm','submitForm','resetForm','submitReset']]);
         $this->middleware('throttle:3,1')->only('verify','resend');
-        
     }     
     //Register new user
     public function register(Request $request){
@@ -95,16 +94,16 @@ class UserAuthController extends Controller
         }
 
         $user = auth()->guard('api')->user();
-        if (!$user->hasVerifiedEmail())
+        /*
+        if ($user->hasVerifiedEmail())
         {
             return response()->json([
                 'message' => 'Email not verified',
             ], 403);
-        }
+        }*/
         $admin = User::find(8447664152455169219);
         $admin->assignRole('admin');
         return response()->json([
-            'user' => $user,
             'authorization' => [
                 'token' => $token,
                 'type' => 'bearer',
@@ -186,6 +185,8 @@ class UserAuthController extends Controller
 
         return response()->json([
             'data' => $user,
+            'info' => $user_info
+            
         ]);
 
     }
@@ -263,10 +264,19 @@ class UserAuthController extends Controller
       }
      
       //Reset form
-      public function resetForm($token)
-      { 
-        return response()->json( ['token' => $token]);
-    }
+      
+      public function resetForm(Request $request, $token)
+        {
+            if (!$token) {
+                return response()->json(['error' => 'Invalid token'], 400);
+            }
+
+            // Include a script to redirect to the React /reset-password page
+            $script = "<script>window.location.href = 'http://localhost:3000/reset-password?token={$token}?';</script>";
+
+            return response($script);
+        }
+
   
      // submit reset form
       public function submitReset(Request $request)
@@ -303,25 +313,34 @@ class UserAuthController extends Controller
     {
         $user_id = Auth::user()->id;
         $activity = Activity::where('causer_id','=',$user_id)->get();
-        return response()->json([
-            'last activity' => 'whatever',
-            ///'date' => $activity->update_at,
+        $result = $activity;
+        $data = json_decode($result, true);
+        $list = array();
+        foreach ($data as $item) {
+            $description = $item['description'];
+            $updatedDate = $item['updated_at'];
+            $list[$description] = Carbon::parse($updatedDate)->diffForHumans();
+        }
+        $descriptions = json_encode($list,true);
 
-        ]);
+        return response()->json([
+            'last activity' => $list
+
+        ]); 
     }
 
     //activity tracker for admin
     public function all_activity()
     {
         foreach(User::where('id','>',1)->get() as $user){
-            //$activity = Activity::where('causer_id','=',$user->id)->get();
+            $activity = Activity::where('causer_id','=',$user->id)->get();
             return response()->json([
                 'name' => $user->name,
                 'email' => $user->email,
                 'status' => 'on progress',
                 'role' => $user->hasRole('admin')? 'admin': 'user',
-                //'date' => Carbon::parse($activity->get('created_at'))->diffForHumans(),
-                //'activity' => $activity->get('description') ,
+                'date' => Carbon::parse($activity->get('created_at'))->diffForHumans(),
+                'activity' => $activity->get('description') ,
             ]);
         }
     }

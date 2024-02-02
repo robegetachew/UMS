@@ -12,6 +12,10 @@ use Illuminate\Http\Request;
 class UserInfoController extends Controller
 {
     //
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['store']]);
+    }
     public function info()
     {
         $user = UserInfo::where('user_id','=',Auth::user()->id)->get();
