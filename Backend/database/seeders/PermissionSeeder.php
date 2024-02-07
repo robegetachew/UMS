@@ -20,7 +20,5 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'search users']);
         Permission::create(['name' => 'delete users']);
 
-        $admin = User::find(8447664152455169219);
-        $admin->assignRole('admin');
     }
 }

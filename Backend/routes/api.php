@@ -30,9 +30,9 @@ Route::group(['middleware'=>['auth:api', ]],function () {
     Route::get('/activity',[UserAuthController::class,'activity'])->name('activity');
     Route::get('/info',[UserInfoController::class,'info'])->name('info');
     Route::post('/info',[UserInfoController::class,'store'])->name('store');
-
     Route::get('/all-activity',[UserAuthController::class,'all_activity'])->name('all_activity')->middleware('role:admin');
-
+    Route::post('/activate/{id}',[UserAuthController::class,'activate'])->name('activate')->middleware('role:admin');
+    Route::post('/deactivate/{id}',[UserAuthController::class,'deactivate'])->name('deactivate')->middleware('role:admin');
 });
 
 Route::controller(UserAuthController::class)->group(function () {
@@ -45,7 +45,8 @@ Route::controller(UserAuthController::class)->group(function () {
     Route::post('/forget-password', 'submitForm')->name('password.email'); 
     Route::get('/reset-password/{token}', 'resetForm')->name('password.reset');
     Route::post('/reset-password',  'submitReset')->name('password.update');
-    
+
+
 });
 
 Route::controller(UserInfoController::class)->group(function (){

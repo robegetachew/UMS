@@ -50,14 +50,28 @@ class UserAuthController extends Controller
         $registerUserData = $request->validate([
             'name'=>'required|string',
             'email'=>'required|string|email|unique:users',
-            'password'=>'required|min:8'
+            'password'=>'required|min:8',
+            'full_name'=>'required|string',
+            'gender'=>'required|string',
+            'phone_number'=>'required',
+            'date_of_birth'=>'required',
+            'location'=>'required',
+            'image_path' => 'required|image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+
         ]);
-        
+        $image_path = $request->file('image_path')->store('image_path', 'public');
+
         $user = User::create([
             'id' => random_id(),
             'name' => $registerUserData['name'],
             'email' => $registerUserData['email'],
             'password' => Hash::make($registerUserData['password']),
+            'full_name' => $registerUserData['full_name'],
+            'gender' => $registerUserData['gender'],
+            'phone_number' => $registerUserData['phone_number'],
+            'date_of_birth' => Carbon::parse($registerUserData['date_of_birth']),
+            'location' => $registerUserData['location'],
+            'image_path' => $image_path,
         ]);
 
         event(new Registered($user));
@@ -101,8 +115,11 @@ class UserAuthController extends Controller
                 'message' => 'Email not verified',
             ], 403);
         }*/
-        $admin = User::find(8447664152455169219);
-        $admin->assignRole('admin');
+        if ($user->is_active == False){
+            return response()->json([
+                'message' => 'your accounte is deactivated contact the administrator',
+            ]);
+        }
         return response()->json([
             'authorization' => [
                 'token' => $token,
@@ -132,13 +149,26 @@ class UserAuthController extends Controller
         $data = $request->validate([
             'name' => 'unique:users,name|min:4',
             'email' => 'email|unique:users,email',
-            'password' => 'min:8|confirmed'
+            'password' => 'min:8|confirmed',
+            'full_name'=>'string',
+            'gender'=>'string',
+            'phone_number'=>'string',
+            'date_of_birth'=>'date',
+            'location'=>'string',
+            'image_path' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048',
+
         ]);
         //update
         $user_data = User::find(auth()->user()->id);
         isset($request->name)? $user_data->name = $data['name']: $user_data->name ;
         isset($request->email)? $user_data->email = $data['email']: $user_data->email ;
         isset($request->password)? $user_data->password = $data['password']: $user_data->password ;
+        isset($request->full_name)? $user_data->full_name = $data['full_name']: $user_data->full_name ;
+        isset($request->gender)? $user_data->gender = $data['gender']: $user_data->gender ;
+        isset($request->phone_number)? $user_data->phone_number = $data['phone_number']: $user_data->phone_number ;
+        isset($request->date_of_birth)? $user_data->date_of_birth = $data['date_of_birth']: $user_data->date_of_birth ;
+        isset($request->location)? $user_data->location = $data['location']: $user_data->location ;
+        isset($request->image_path)? $user_data->image_path = $data['image_path']: $user_data->image_path ;
         $user_data->save();
        
         //response
@@ -150,7 +180,7 @@ class UserAuthController extends Controller
     }
     public function update_user(Request $request,$id)
     {
-        activity()->log('Updated profile');
+        activity()->log('Updated users profile');
 
         //validate
         $data = $request->validate([
@@ -181,11 +211,9 @@ class UserAuthController extends Controller
 
         //return profile
         $user = Auth::user();
-        $user_info = UserInfo::where('user_id','=',Auth::user()->id)->get();
 
         return response()->json([
             'data' => $user,
-            'info' => $user_info
             
         ]);
 
@@ -194,12 +222,33 @@ class UserAuthController extends Controller
     //delete profile
     public function destroy($id)
     {
-        User::where('id',$id)->delete();
+        User::where('id',$id)->update(['is_deleted' => True])->delete();
+
         return response()->json([
             "message"=>"User Deleted"
           ]);
     }
 
+    //activate profile
+    public function activate($id)
+    {
+        User::where('id',$id)->update(['is_active' => True]);
+
+        return response()->json([
+            "message"=>"User Activated"
+          ]);
+    }
+
+    //deactivate profile
+    public function deactivate($id)
+    {
+        User::where('id',$id)->update(['is_active' => False]);
+
+        return response()->json([
+            "message"=>"User Deactivated"
+          ]);
+    }
+ 
     //logout
     public function logout(){
         activity()->log('Logged Out');

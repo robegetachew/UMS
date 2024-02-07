@@ -17,9 +17,16 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->softDeletes();
             $table->boolean('is_active')->default(True);
+            $table->boolean('is_deleted')->default(False);
             $table->rememberToken();
+            $table->string('full_name');
+            $table->enum('gender',['male','female']);
+            $table->string('phone_number');
+            $table->dateTime('date_of_birth');
+            $table->string('location');
+            $table->string('image_path');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

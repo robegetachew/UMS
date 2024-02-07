@@ -24,11 +24,17 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'name' => "Admin",
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'full_name' => fake()->name(),
+            'gender' => "male",
+            'phone_number' => '0987654321',
+            'date_of_birth' => fake()->date(),
+            'location' => "Addis Ababa",
+            'image_path' => "C:\Pj\Assessment\Laravel-React-project\Backend\storage\app\public\image_path\3eLFbFUGXBC2wRIrYBrZ7YQwegdIO5cCyH91HjGK.png",
         ];
     }
 
